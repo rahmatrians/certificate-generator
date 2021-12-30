@@ -1,0 +1,128 @@
+<label for="uploader">Select file:</label>
+<input type="file" id="uploader" />
+<label>
+    Name:
+    <input id="name" type='text'>
+  </label>
+<label>
+    X:
+    <input id="xCoor" type='number'>
+  </label>
+<label>
+    Y:
+    <input id="yCoor" type='number'>
+  </label>
+  <button>Download</button>
+  <br>
+<canvas style="margin-left: 100px;" id="prevCanvas"></canvas>
+<canvas style="margin-left: 10px; opacity:0.0;" hidden id="canvas"></canvas>
+<script>
+
+
+  // 1.
+  let names = ["yolu", "stusimo", "fumo"];
+  console.log(names[0]);
+
+  const prevCanvas = document.getElementById("prevCanvas");
+  const canvas = document.getElementById("canvas");
+  const prevCtx = prevCanvas.getContext("2d");
+  const ctx = canvas.getContext("2d");
+  const nameInput = document.getElementById('name');
+  const xCoorInput = document.getElementById('xCoor');
+  const yCoorInput = document.getElementById('yCoor');
+  
+
+  var switchVar = false;
+  const previewSize = 0.5;
+ var name = "";
+  // 2.
+  const reader = new FileReader();
+  const img = new Image();
+  // 3.
+  const uploadImage = (e) => {
+      reader.onload = () => {
+        img.onload = () => {
+          drawImage();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    };
+
+    const imageH = img.width;
+    
+    
+    
+    function drawImage() {
+      prevCanvas.width = img.width * previewSize;
+  prevCanvas.height = img.height * previewSize;
+  prevImgWidth = prevCanvas.width ;
+  prevImgHeight = prevCanvas.height;
+          // prevCanvas.setAttribute("style", "opacity: 0.4;")
+
+      if (switchVar == true) {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        imgWidth = canvas.width;
+        imgHeight = canvas.height;
+        console.log("it's working");
+        // canvas.setAttribute("style", "opacity: 0.0;")
+  } else {
+  canvas.width = img.width;
+canvas.height = img.height;
+imgWidth = canvas.width ;
+imgHeight = canvas.height;
+}
+	// ctx.clearRect(0, 0, canvas.width, canvas.height)
+	ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+	ctx.font = '40px monotype corsiva';
+	ctx.fillStyle = '#29e';
+    ctx.textAlign = "center";
+	ctx.fillText(name, xCoor.value, yCoor.value);
+  // -----------------
+	prevCtx.drawImage(img, 0, 0, prevImgWidth, prevImgHeight);
+	prevCtx.font = 40* previewSize + 'px monotype corsiva';
+	prevCtx.fillStyle = '#29e';
+    prevCtx.textAlign = "center";
+	prevCtx.fillText(names[0], xCoor.value * previewSize, yCoor.value * previewSize);
+}
+
+nameInput.addEventListener('input', function () {
+	drawImage();
+})
+
+xCoorInput.addEventListener('input', function () {
+	drawImage();
+})
+
+yCoorInput.addEventListener('input', function () {
+	drawImage();
+})
+
+  // 4.
+  const imageLoader = document.getElementById("uploader");
+  imageLoader.addEventListener("change", uploadImage);
+
+function loopData() {
+  for (let v = 0; v < names.length; v++) {
+    name = names[v];
+    console.log(name);
+    drawImage();
+    const image = canvas.toDataURL();
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "image-" + name +".png";
+    link.click();
+  }
+}
+
+  // 5.
+  function download() {
+    switchVar = true;
+    console.log("switchVar : "+switchVar);
+    loopData();
+  }
+  
+  //6.
+  document.querySelector("button").addEventListener("click", download);
+</script>

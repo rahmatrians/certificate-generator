@@ -9,31 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
-
-  <!-- Importing SheetJS for Excel -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.16.8/dist/xlsx.full.min.js"
-    integrity="sha256-Ic7HP804IrYks4vUqX1trFF1Nr33RjONeJESZnYxsOY=" crossorigin="anonymous"></script>
-
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"
-    integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm"
-    crossorigin="anonymous"></script>
-
   <title>Sertifix</title>
 </head>
 <body>
-
-  <div class="row">
-    <div id="drop_zone" class="card bg-secondary d-flex w-100 m-1" ondrop="dropHandler(event);"
-      ondragover="dragOverHandler(event);">
-      <div class="card-body align-items-center d-flex" style="min-height: 350px;">
-        <p class="text-light text-center w-100">Drag your Excel file into this box.</p>
-      </div>
-    </div>
-  </div>
 
 <label for="uploader">Select file:</label>
 <input type="file" id="uploader" />
@@ -69,43 +47,9 @@
 <canvas style="margin-left: 10px; opacity:0.0;" hidden id="canvas"></canvas>
 <script>
 
-var names = [];
-
-  // ------------ xlsx reader ------------------
-
-  function dropHandler(e) {
-    e.stopPropagation(); e.preventDefault();
-    var files = e.dataTransfer.files, f = files[0];
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      var data = new Uint8Array(e.target.result);
-      var workbook = XLSX.read(data, { type: 'array' });
-
-      var first_sheet_name = workbook.SheetNames[0];
-      var worksheet = workbook.Sheets[first_sheet_name];
-      names = XLSX.utils.sheet_to_json(worksheet);
-
-      // console.log(json[0]['nama']);
-
-      $('#drop_zone').remove();
-    }
-    reader.readAsArrayBuffer(f);
-    console.log('File(s) dropped');
-  }
-
-  function dragOverHandler(e) {
-    e.preventDefault();
-  };
-
-
-
-
-
-
-
-// ------------ generator ------------------
-  // let names = ["yolu", "stusimo", "fumo"];
-  // console.log(names[0]);
+  let names = ["yolu", "stusimo", "fumo"];
+  console.log(names[0]);
+  var name = "";
 
   // 1.
   const prevCanvas = document.getElementById("prevCanvas");
@@ -122,7 +66,6 @@ var names = [];
 
   var switchVar = false;
   const previewSize = 0.5;
-  var name = "";
   // 2.
   const reader = new FileReader();
   const img = new Image();
@@ -166,13 +109,13 @@ imgHeight = canvas.height;
 	ctx.font = '800 ' + fontSizeInput.value + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
 	ctx.fillStyle = textColorInput.value;
     ctx.textAlign = "center";
-	ctx.fillText(name, xCoor.value, yCoor.value);
+	ctx.fillText(nameInput.value, xCoor.value, yCoor.value);
   // -----------------
 	prevCtx.drawImage(img, 0, 0, prevImgWidth, prevImgHeight);
 	prevCtx.font = '800 ' + fontSizeInput.value * previewSize + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
 	prevCtx.fillStyle = textColorInput.value;
     prevCtx.textAlign = "center";
-	prevCtx.fillText(names[0]['nama'], xCoor.value * previewSize, yCoor.value * previewSize);
+	prevCtx.fillText(nameInput.value, xCoor.value * previewSize, yCoor.value * previewSize);
 }
 
 nameInput.addEventListener('input', function () {
@@ -203,24 +146,16 @@ yCoorInput.addEventListener('input', function () {
   const imageLoader = document.getElementById("uploader");
   imageLoader.addEventListener("change", uploadImage);
 
-function loopData() {
-  for (let v = 0; v < names.length; v++) {
-    name = names[v]['nama'];
-    console.log(name);
-    drawImage();
-    const image = canvas.toDataURL();
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = "image-" + name +".png";
-    link.click();
-  }
-}
-
   // 5.
   function download() {
     switchVar = true;
+    drawImage();
     console.log("switchVar : "+switchVar);
-    loopData();
+    const image = canvas.toDataURL();
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "image.png";
+    link.click();
   }
   
   //6.
