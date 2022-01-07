@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Importing SheetJS for Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.16.8/dist/xlsx.full.min.js"
+    integrity="sha256-Ic7HP804IrYks4vUqX1trFF1Nr33RjONeJESZnYxsOY=" crossorigin="anonymous"></script>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+
+  <style>
+    /*------ Style 2 ------*/
+    #textColor {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      position: relative;
+      top: 15px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    #textColor::-webkit-color-swatch {
+      border: none;
+      border-radius: 50%;
+    }
+    #textColor::-moz-color-swatch {
+      border: none;
+      border-radius: 50%;
+    }
+  </style>
+
+  <title>Sertifix</title>
+</head>
+<body class="bg-slate-200">
+
+  <div class="flex justify-center items-center h-screen" id="optionFeature">
+    <a id="manualFeature" class="rounded relative inline-flex group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-gradient-to-tr from-orange-600 to-orange-500 border-orange-700 text-white">
+      <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
+      <span class="relative">Manual</span>
+  </a>
+    <a id="multipleFeature" class="rounded relative inline-flex group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-gradient-to-tr from-purple-600 to-purple-500 border-purple-700 text-white">
+      <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
+      <span class="relative">Multiple</span>
+  </a>
+  </div>
+
+  <div class="grid h-screen hidden" id="screen">
+
+      <div id="drop_zone" class="card bg-secondary d-flex w-100 overflow-hidden hidden" ondrop="dropHandler(event);"
+        ondragover="dragOverHandler(event);">
+        <div class="card-body mx-auto items-center flex h-screen">
+          <p class="mx-auto">Drop file Excel kamu ke sini</p>
+      </div>
+    </div>
+
+    <div class="w-7/12 h-4/6 bg-white container mx-auto my-auto place-self-center rounded-[48px] p-10 hidden" id="attachImage">
+      <div class=" mx-auto md:max-w-xl">
+          <div class="">
+              <div class="w-full p-3">
+                  <div class="relative border-dotted h-48 rounded-lg border-dashed border-2 border-blue-700 bg-gray-100 flex justify-center items-center">
+                      <div class="absolute">
+                          <div class="flex flex-col items-center"> <i class="fa fa-folder-open fa-4x text-blue-700"></i> <span class="block text-gray-400 font-normal">Drop Sertifikat (PNG/JPG) mu di sini</span> </div>
+                      </div>
+                      <input type="file" id="uploader" class="h-full w-full opacity-0" name="">
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <canvas class="w-7/12 h-30 bg-white container mx-auto my-auto place-self-center rounded-[48px] p-10" id="prevCanvas" style="display: none;">
+    </canvas>
+  </div>
+  <canvas style="margin-left: 10px; opacity:0.0;" hidden id="canvas"></canvas>
+  
+<div id="menu" class="fixed bottom-0 bg-white p-12 mb-10 mx-32 left-0 right-0 rounded-[38px] inline-block hidden">
+  <div class="mx-auto flex justify-center">
+    <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 " id="namaDiv">
+      <label for="name" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Nama</label>
+      <input id="name" name="name" type="text" placeholder="" class="focus:caret-pink-500 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+    </div>
+
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 pr-3">
+        <label for="fontFamily" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Font</label>
+        <select name="fontFamily" id="fontFamily" class="focus:caret-pink-500 bg-gray-200 border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none">
+          <option value="corsiva">Default</option>
+          <option value="poppins">Poppins Bold</option>
+        </select>
+      </div>
+
+
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 pr-3">
+        <label for="textAlign" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Align</label>
+        <select name="textAlign" id="textAlign" class="focus:caret-pink-500 bg-gray-200 border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none">
+          <option value="center">Center</option>
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 ">
+        <label for="fontSize" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Font Size</label>
+        <input id="fontSize" type="number" placeholder="  " class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+      </div>
+           
+      <div class="relative bottom-2 inline rounded-lg mr-6 pr-3">
+        <label for="textColor" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Color</label>
+        <input type="color" id="textColor" name="textColor" placeholder="" class="bg-red-900 ml-2 appearance-none rounded-full overflow-hidden h-10 w-10 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" />
+      </div>
+   
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 ">
+        <label for="something" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">X</label>
+        <input id="xCoor" type="number" placeholder="  " class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+      </div>
+      
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 ">
+        <label for="something" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Y</label>
+        <input id="yCoor" type="number" placeholder="  " class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+      </div>
+ 
+      <a id="download" class="rounded relative inline-flex group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-gradient-to-tr from-purple-600 to-purple-500 border-purple-700 text-white">
+        <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
+        <span class="relative">Download</span>
+    </a>
+</div>
+</div>
+
+
+<script>
+
+document.getElementById('multipleFeature').addEventListener("click", function () {
+  document.getElementById("multipleFeature").remove();
+  document.getElementById("manualFeature").remove();
+  if (document.getElementById('menu').classList.contains('hidden')) {
+    document.getElementById('menu').classList.remove("hidden");
+    document.getElementById('drop_zone').classList.remove("hidden");
+    document.getElementById('screen').classList.remove("hidden");
+    document.getElementById('optionFeature').classList.add("hidden");
+    document.getElementById('namaDiv').classList.add("hidden");
+  }
+});
+
+window.addEventListener("load", function () {
+  // document.getElementById("menu").style.display = "none";
+});
+
+// var names = ["fafaf","fafaf","fafaf"];
+var names = [];
+
+  // ------------ xlsx reader ------------------
+
+  function dropHandler(e) {
+    e.stopPropagation(); e.preventDefault();
+    var files = e.dataTransfer.files, f = files[0];
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, { type: 'array' });
+
+      var first_sheet_name = workbook.SheetNames[0];
+      var worksheet = workbook.Sheets[first_sheet_name];
+      names = XLSX.utils.sheet_to_json(worksheet);
+
+      // console.log(json[0]['nama']);
+
+      $('#drop_zone').remove();
+      document.getElementById('attachImage').classList.remove("hidden");
+    }
+    reader.readAsArrayBuffer(f);
+    console.log('File(s) dropped');
+  }
+
+  function dragOverHandler(e) {
+    e.preventDefault();
+  };
+
+
+
+
+
+
+
+// ------------ generator ------------------
+  // let names = ["yolu", "stusimo", "fumo"];
+  // console.log(names[0]);
+
+  // 1.
+
+  const canvas = document.getElementById("canvas");
+  const prevCtx = prevCanvas.getContext("2d");
+  const ctx = canvas.getContext("2d");
+  const fontFamilyInput = document.getElementById('fontFamily');
+  const nameInput = document.getElementById('name');
+  const textAlignInput = document.getElementById('textAlign');
+  const fontSizeInput = document.getElementById('fontSize');
+  const textColorInput = document.getElementById('textColor');
+  const xCoorInput = document.getElementById('xCoor');
+  const yCoorInput = document.getElementById('yCoor');
+  
+
+  console.log(textColorInput.value);
+
+
+  var switchVar = false;
+  const previewSize = 0.5;
+  var name = "";
+  // 2.
+  const reader = new FileReader();
+  const img = new Image();
+  // 3.
+  const uploadImage = (e) => {
+      reader.onload = () => {
+        img.onload = () => {
+          document.getElementById('attachImage').remove();
+          document.getElementById('prevCanvas').style.display = '';
+          drawImage();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    };
+
+    const imageH = img.width;
+    
+    
+    
+    function drawImage() {
+      prevCanvas.width = img.width * previewSize;
+  prevCanvas.height = img.height * previewSize;
+  prevImgWidth = prevCanvas.width ;
+  prevImgHeight = prevCanvas.height;
+          // prevCanvas.setAttribute("style", "opacity: 0.4;")
+
+      if (switchVar == true) {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        imgWidth = canvas.width;
+        imgHeight = canvas.height;
+        console.log("it's working");
+        // canvas.setAttribute("style", "opacity: 0.0;")
+  } else {
+  canvas.width = img.width;
+canvas.height = img.height;
+imgWidth = canvas.width ;
+imgHeight = canvas.height;
+}
+	// ctx.clearRect(0, 0, canvas.width, canvas.height)
+	ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+	ctx.font = '800 ' + fontSizeInput.value + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
+	ctx.fillStyle = textColorInput.value;
+    ctx.textAlign = textAlignInput.value;
+	ctx.fillText(name, xCoor.value, yCoor.value);
+  // -----------------
+	prevCtx.drawImage(img, 0, 0, prevImgWidth, prevImgHeight);
+	prevCtx.font = '800 ' + fontSizeInput.value * previewSize + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
+	prevCtx.fillStyle = textColorInput.value;
+    prevCtx.textAlign = textAlignInput.value;
+	prevCtx.fillText(names[0]['nama'], xCoor.value * previewSize, yCoor.value * previewSize);
+}
+
+nameInput.addEventListener('input', function () {
+	drawImage();
+})
+
+fontFamilyInput.addEventListener('click', function () {
+	drawImage();
+})
+
+textAlignInput.addEventListener('click', function () {
+	drawImage();
+})
+
+fontSizeInput.addEventListener('input', function () {
+	drawImage();
+})
+
+textColorInput.addEventListener('input', function () {
+  drawImage();
+  // textColorInput.classList.add('bg-['+ textColorInput.value +']');
+})
+
+xCoorInput.addEventListener('input', function () {
+	drawImage();
+})
+
+yCoorInput.addEventListener('input', function () {
+	drawImage();
+})
+
+  // 4.
+  const imageLoader = document.getElementById("uploader");
+  imageLoader.addEventListener("change", uploadImage);
+
+function loopData() {
+  for (let v = 0; v < names.length; v++) {
+    name = names[v]['nama'];
+    console.log(name);
+    drawImage();
+    const image = canvas.toDataURL();
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "image-" + name +".png";
+    link.click();
+  }
+}
+
+  // 5.
+  function download() {
+    switchVar = true;
+    console.log("switchVar : "+switchVar);
+    loopData();
+  }
+  
+  //6.
+  document.getElementById("download").addEventListener("click", download);
+</script>
+  
+</body>
+</html>

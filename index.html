@@ -139,6 +139,145 @@
 
 <script>
 
+document.getElementById('manualFeature').addEventListener("click", function () {
+  document.getElementById("multipleFeature").remove();
+  document.getElementById("manualFeature").remove();
+  if (document.getElementById('menu').classList.contains('hidden')) {
+    document.getElementById('menu').classList.remove("hidden");
+    document.getElementById('screen').classList.remove("hidden");
+    document.getElementById('optionFeature').classList.add("hidden");
+    document.getElementById('attachImage').classList.remove("hidden");
+
+
+    // 1.
+
+    const canvas = document.getElementById("canvas");
+    const prevCtx = prevCanvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
+    const fontFamilyInput = document.getElementById('fontFamily');
+    const nameInput = document.getElementById('name');
+    const textAlignInput = document.getElementById('textAlign');
+    const fontSizeInput = document.getElementById('fontSize');
+    const textColorInput = document.getElementById('textColor');
+    const xCoorInput = document.getElementById('xCoor');
+    const yCoorInput = document.getElementById('yCoor');
+
+
+    console.log(textColorInput.value);
+
+
+    var switchVar = false;
+    const previewSize = 0.5;
+    // 2.
+    const reader = new FileReader();
+    const img = new Image();
+    // 3.
+    const uploadImage = (e) => {
+        reader.onload = () => {
+          img.onload = () => {
+            document.getElementById('attachImage').remove();
+            document.getElementById('prevCanvas').style.display = '';
+            drawImage();
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      };
+
+      const imageH = img.width;
+      
+      
+      
+      function drawImage() {
+        prevCanvas.width = img.width * previewSize;
+    prevCanvas.height = img.height * previewSize;
+    prevImgWidth = prevCanvas.width ;
+    prevImgHeight = prevCanvas.height;
+            // prevCanvas.setAttribute("style", "opacity: 0.4;")
+
+        if (switchVar == true) {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          imgWidth = canvas.width;
+          imgHeight = canvas.height;
+          console.log("it's working");
+          // canvas.setAttribute("style", "opacity: 0.0;")
+    } else {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    imgWidth = canvas.width ;
+    imgHeight = canvas.height;
+    }
+    // ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+    ctx.font = '800 ' + fontSizeInput.value + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
+    ctx.fillStyle = textColorInput.value;
+      ctx.textAlign = textAlignInput.value;
+    ctx.fillText(nameInput.value, xCoor.value, yCoor.value);
+    // -----------------
+    prevCtx.drawImage(img, 0, 0, prevImgWidth, prevImgHeight);
+    prevCtx.font = '800 ' + fontSizeInput.value * previewSize + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
+    prevCtx.fillStyle = textColorInput.value;
+      prevCtx.textAlign = textAlignInput.value;
+    prevCtx.fillText(nameInput.value, xCoor.value * previewSize, yCoor.value * previewSize);
+    }
+
+    nameInput.addEventListener('input', function () {
+    drawImage();
+    })
+
+    fontFamilyInput.addEventListener('click', function () {
+    drawImage();
+    })
+
+    textAlignInput.addEventListener('click', function () {
+    drawImage();
+    })
+
+    fontSizeInput.addEventListener('input', function () {
+    drawImage();
+    })
+
+    textColorInput.addEventListener('input', function () {
+    drawImage();
+    // textColorInput.classList.add('bg-['+ textColorInput.value +']');
+    })
+
+    xCoorInput.addEventListener('input', function () {
+    drawImage();
+    })
+
+    yCoorInput.addEventListener('input', function () {
+    drawImage();
+    })
+
+    // 4.
+    const imageLoader = document.getElementById("uploader");
+    imageLoader.addEventListener("change", uploadImage);
+
+    function loopData() {
+    for (let v = 0; v < names.length; v++) {
+     
+    }
+    }
+
+    // 5.
+    function download() {
+      switchVar = true;
+      console.log("switchVar : "+switchVar);
+      drawImage();
+      const image = canvas.toDataURL();
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = "sertifikat-" + nameInput.value +".png";
+      link.click();
+    }
+
+    //6.
+    document.getElementById("download").addEventListener("click", download);
+  }
+});
+
 document.getElementById('multipleFeature').addEventListener("click", function () {
   document.getElementById("multipleFeature").remove();
   document.getElementById("manualFeature").remove();
@@ -148,182 +287,185 @@ document.getElementById('multipleFeature').addEventListener("click", function ()
     document.getElementById('screen').classList.remove("hidden");
     document.getElementById('optionFeature').classList.add("hidden");
     document.getElementById('namaDiv').classList.add("hidden");
+    
   }
-});
 
-window.addEventListener("load", function () {
-  // document.getElementById("menu").style.display = "none";
-});
+          // var names = ["fafaf","fafaf","fafaf"];
+    var names = [];
 
-// var names = ["fafaf","fafaf","fafaf"];
-var names = [];
+    // ------------ xlsx reader ------------------
 
-  // ------------ xlsx reader ------------------
+    function dropHandler(e) {
+      e.stopPropagation(); e.preventDefault();
+      var files = e.dataTransfer.files, f = files[0];
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var data = new Uint8Array(e.target.result);
+        var workbook = XLSX.read(data, { type: 'array' });
 
-  function dropHandler(e) {
-    e.stopPropagation(); e.preventDefault();
-    var files = e.dataTransfer.files, f = files[0];
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      var data = new Uint8Array(e.target.result);
-      var workbook = XLSX.read(data, { type: 'array' });
+        var first_sheet_name = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[first_sheet_name];
+        names = XLSX.utils.sheet_to_json(worksheet);
 
-      var first_sheet_name = workbook.SheetNames[0];
-      var worksheet = workbook.Sheets[first_sheet_name];
-      names = XLSX.utils.sheet_to_json(worksheet);
+        // console.log(json[0]['nama']);
 
-      // console.log(json[0]['nama']);
-
-      $('#drop_zone').remove();
-      document.getElementById('attachImage').classList.remove("hidden");
+        $('#drop_zone').remove();
+        document.getElementById('attachImage').classList.remove("hidden");
+      }
+      reader.readAsArrayBuffer(f);
+      console.log('File(s) dropped');
     }
-    reader.readAsArrayBuffer(f);
-    console.log('File(s) dropped');
-  }
 
-  function dragOverHandler(e) {
-    e.preventDefault();
-  };
-
-
-
-
-
-
-
-// ------------ generator ------------------
-  // let names = ["yolu", "stusimo", "fumo"];
-  // console.log(names[0]);
-
-  // 1.
-
-  const canvas = document.getElementById("canvas");
-  const prevCtx = prevCanvas.getContext("2d");
-  const ctx = canvas.getContext("2d");
-  const fontFamilyInput = document.getElementById('fontFamily');
-  const nameInput = document.getElementById('name');
-  const textAlignInput = document.getElementById('textAlign');
-  const fontSizeInput = document.getElementById('fontSize');
-  const textColorInput = document.getElementById('textColor');
-  const xCoorInput = document.getElementById('xCoor');
-  const yCoorInput = document.getElementById('yCoor');
-  
-
-  console.log(textColorInput.value);
-
-
-  var switchVar = false;
-  const previewSize = 0.5;
-  var name = "";
-  // 2.
-  const reader = new FileReader();
-  const img = new Image();
-  // 3.
-  const uploadImage = (e) => {
-      reader.onload = () => {
-        img.onload = () => {
-          document.getElementById('attachImage').remove();
-          document.getElementById('prevCanvas').style.display = '';
-          drawImage();
-        };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(e.target.files[0]);
+    function dragOverHandler(e) {
+      e.preventDefault();
     };
 
-    const imageH = img.width;
-    
-    
-    
-    function drawImage() {
-      prevCanvas.width = img.width * previewSize;
-  prevCanvas.height = img.height * previewSize;
-  prevImgWidth = prevCanvas.width ;
-  prevImgHeight = prevCanvas.height;
-          // prevCanvas.setAttribute("style", "opacity: 0.4;")
 
-      if (switchVar == true) {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        imgWidth = canvas.width;
-        imgHeight = canvas.height;
-        console.log("it's working");
-        // canvas.setAttribute("style", "opacity: 0.0;")
-  } else {
-  canvas.width = img.width;
-canvas.height = img.height;
-imgWidth = canvas.width ;
-imgHeight = canvas.height;
-}
-	// ctx.clearRect(0, 0, canvas.width, canvas.height)
-	ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-	ctx.font = '800 ' + fontSizeInput.value + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
-	ctx.fillStyle = textColorInput.value;
-    ctx.textAlign = textAlignInput.value;
-	ctx.fillText(name, xCoor.value, yCoor.value);
-  // -----------------
-	prevCtx.drawImage(img, 0, 0, prevImgWidth, prevImgHeight);
-	prevCtx.font = '800 ' + fontSizeInput.value * previewSize + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
-	prevCtx.fillStyle = textColorInput.value;
-    prevCtx.textAlign = textAlignInput.value;
-	prevCtx.fillText(names[0]['nama'], xCoor.value * previewSize, yCoor.value * previewSize);
-}
 
-nameInput.addEventListener('input', function () {
-	drawImage();
-})
 
-fontFamilyInput.addEventListener('click', function () {
-	drawImage();
-})
 
-textAlignInput.addEventListener('click', function () {
-	drawImage();
-})
 
-fontSizeInput.addEventListener('input', function () {
-	drawImage();
-})
 
-textColorInput.addEventListener('input', function () {
-  drawImage();
-  // textColorInput.classList.add('bg-['+ textColorInput.value +']');
-})
+    // ------------ generator ------------------
+    // let names = ["yolu", "stusimo", "fumo"];
+    // console.log(names[0]);
 
-xCoorInput.addEventListener('input', function () {
-	drawImage();
-})
+    // 1.
 
-yCoorInput.addEventListener('input', function () {
-	drawImage();
-})
+    const canvas = document.getElementById("canvas");
+    const prevCtx = prevCanvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
+    const fontFamilyInput = document.getElementById('fontFamily');
+    const nameInput = document.getElementById('name');
+    const textAlignInput = document.getElementById('textAlign');
+    const fontSizeInput = document.getElementById('fontSize');
+    const textColorInput = document.getElementById('textColor');
+    const xCoorInput = document.getElementById('xCoor');
+    const yCoorInput = document.getElementById('yCoor');
 
-  // 4.
-  const imageLoader = document.getElementById("uploader");
-  imageLoader.addEventListener("change", uploadImage);
 
-function loopData() {
-  for (let v = 0; v < names.length; v++) {
-    name = names[v]['nama'];
-    console.log(name);
+    console.log(textColorInput.value);
+
+
+    var switchVar = false;
+    const previewSize = 0.5;
+    var name = "";
+    // 2.
+    const reader = new FileReader();
+    const img = new Image();
+    // 3.
+    const uploadImage = (e) => {
+        reader.onload = () => {
+          img.onload = () => {
+            document.getElementById('attachImage').remove();
+            document.getElementById('prevCanvas').style.display = '';
+            drawImage();
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      };
+
+      const imageH = img.width;
+      
+      
+      
+      function drawImage() {
+        prevCanvas.width = img.width * previewSize;
+    prevCanvas.height = img.height * previewSize;
+    prevImgWidth = prevCanvas.width ;
+    prevImgHeight = prevCanvas.height;
+            // prevCanvas.setAttribute("style", "opacity: 0.4;")
+
+        if (switchVar == true) {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          imgWidth = canvas.width;
+          imgHeight = canvas.height;
+          console.log("it's working");
+          // canvas.setAttribute("style", "opacity: 0.0;")
+    } else {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    imgWidth = canvas.width ;
+    imgHeight = canvas.height;
+    }
+    // ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+    ctx.font = '800 ' + fontSizeInput.value + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
+    ctx.fillStyle = textColorInput.value;
+      ctx.textAlign = textAlignInput.value;
+    ctx.fillText(name, xCoor.value, yCoor.value);
+    // -----------------
+    prevCtx.drawImage(img, 0, 0, prevImgWidth, prevImgHeight);
+    prevCtx.font = '800 ' + fontSizeInput.value * previewSize + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
+    prevCtx.fillStyle = textColorInput.value;
+      prevCtx.textAlign = textAlignInput.value;
+    prevCtx.fillText(names[0]['nama'], xCoor.value * previewSize, yCoor.value * previewSize);
+    }
+
+    nameInput.addEventListener('input', function () {
     drawImage();
-    const image = canvas.toDataURL();
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = "image-" + name +".png";
-    link.click();
-  }
-}
+    })
 
-  // 5.
-  function download() {
-    switchVar = true;
-    console.log("switchVar : "+switchVar);
-    loopData();
-  }
-  
-  //6.
-  document.getElementById("download").addEventListener("click", download);
+    fontFamilyInput.addEventListener('click', function () {
+    drawImage();
+    })
+
+    textAlignInput.addEventListener('click', function () {
+    drawImage();
+    })
+
+    fontSizeInput.addEventListener('input', function () {
+    drawImage();
+    })
+
+    textColorInput.addEventListener('input', function () {
+    drawImage();
+    // textColorInput.classList.add('bg-['+ textColorInput.value +']');
+    })
+
+    xCoorInput.addEventListener('input', function () {
+    drawImage();
+    })
+
+    yCoorInput.addEventListener('input', function () {
+    drawImage();
+    })
+
+    // 4.
+    const imageLoader = document.getElementById("uploader");
+    imageLoader.addEventListener("change", uploadImage);
+
+    function loopData() {
+    for (let v = 0; v < names.length; v++) {
+      name = names[v]['nama'];
+      console.log(name);
+      drawImage();
+      const image = canvas.toDataURL();
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = "image-" + name +".png";
+      link.click();
+    }
+    }
+
+    // 5.
+    function download() {
+      switchVar = true;
+      console.log("switchVar : "+switchVar);
+      loopData();
+    }
+
+    //6.
+    document.getElementById("download").addEventListener("click", download);
+
+});
+
+// window.addEventListener("load", function () {
+  // document.getElementById("menu").style.display = "none";
+// });
+
 </script>
   
 </body>
