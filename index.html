@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
+  <!-- tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Importing SheetJS for Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.16.8/dist/xlsx.full.min.js"
@@ -16,59 +18,144 @@
 
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"
-    integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm"
-    crossorigin="anonymous"></script>
+
+  <style>
+    /*------ Style 2 ------*/
+    #textColor {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      position: relative;
+      top: 15px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    #textColor::-webkit-color-swatch {
+      border: none;
+      border-radius: 50%;
+    }
+    #textColor::-moz-color-swatch {
+      border: none;
+      border-radius: 50%;
+    }
+  </style>
 
   <title>Sertifix</title>
 </head>
-<body>
+<body class="bg-slate-200">
 
-  <div class="row">
-    <div id="drop_zone" class="card bg-secondary d-flex w-100 m-1" ondrop="dropHandler(event);"
-      ondragover="dragOverHandler(event);">
-      <div class="card-body align-items-center d-flex" style="min-height: 350px;">
-        <p class="text-light text-center w-100">Drag your Excel file into this box.</p>
-      </div>
-    </div>
+  <div class="flex justify-center items-center h-screen" id="optionFeature">
+    <a id="manualFeature" class="rounded relative inline-flex group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-gradient-to-tr from-orange-600 to-orange-500 border-orange-700 text-white">
+      <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
+      <span class="relative">Manual</span>
+  </a>
+    <a id="multipleFeature" class="rounded relative inline-flex group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-gradient-to-tr from-purple-600 to-purple-500 border-purple-700 text-white">
+      <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
+      <span class="relative">Multiple</span>
+  </a>
   </div>
 
-<label for="uploader">Select file:</label>
-<input type="file" id="uploader" />
-<label>
-    Name:
-    <input id="name" type='text'>
-  </label>
-  <label for="fontFamily">Font:</label>
-  <select name="fontFamily" id="fontFamily">
-    <option value="corsiva">Default</option>
-    <option value="poppins">Poppins Bold</option>
-  </select>
-  </label>
-<label>
-    Font Size:
-    <input id="fontSize" type='number'>
-  </label>
-<label>
-    Color:
-    <input type="color" id="textColor" name="textColor">
-  </label>
-<label>
-    X:
-    <input id="xCoor" type='number'>
-  </label>
-<label>
-    Y:
-    <input id="yCoor" type='number'>
-  </label>
-  <button>Download</button>
-  <br>
-<canvas style="margin-left: 10px;" id="prevCanvas"></canvas>
-<canvas style="margin-left: 10px; opacity:0.0;" hidden id="canvas"></canvas>
+  <div class="grid h-screen hidden" id="screen">
+
+      <div id="drop_zone" class="card bg-secondary d-flex w-100 overflow-hidden hidden" ondrop="dropHandler(event);"
+        ondragover="dragOverHandler(event);">
+        <div class="card-body mx-auto items-center flex h-screen">
+          <p class="mx-auto">Drop file Excel kamu ke sini</p>
+      </div>
+    </div>
+
+    <div class="w-7/12 h-4/6 bg-white container mx-auto my-auto place-self-center rounded-[48px] p-10 hidden" id="attachImage">
+      <div class=" mx-auto md:max-w-xl">
+          <div class="">
+              <div class="w-full p-3">
+                  <div class="relative border-dotted h-48 rounded-lg border-dashed border-2 border-blue-700 bg-gray-100 flex justify-center items-center">
+                      <div class="absolute">
+                          <div class="flex flex-col items-center"> <i class="fa fa-folder-open fa-4x text-blue-700"></i> <span class="block text-gray-400 font-normal">Drop Sertifikat (PNG/JPG) mu di sini</span> </div>
+                      </div>
+                      <input type="file" id="uploader" class="h-full w-full opacity-0" name="">
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <canvas class="w-7/12 h-30 bg-white container mx-auto my-auto place-self-center rounded-[48px] p-10" id="prevCanvas" style="display: none;">
+    </canvas>
+  </div>
+  <canvas style="margin-left: 10px; opacity:0.0;" hidden id="canvas"></canvas>
+  
+<div id="menu" class="fixed bottom-0 bg-white p-12 mb-10 mx-32 left-0 right-0 rounded-[38px] inline-block hidden">
+  <div class="mx-auto flex justify-center">
+    <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 " id="namaDiv">
+      <label for="name" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Nama</label>
+      <input id="name" name="name" type="text" placeholder="" class="focus:caret-pink-500 bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+    </div>
+
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 pr-3">
+        <label for="fontFamily" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Font</label>
+        <select name="fontFamily" id="fontFamily" class="focus:caret-pink-500 bg-gray-200 border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none">
+          <option value="corsiva">Default</option>
+          <option value="poppins">Poppins Bold</option>
+        </select>
+      </div>
+
+
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 pr-3">
+        <label for="textAlign" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Align</label>
+        <select name="textAlign" id="textAlign" class="focus:caret-pink-500 bg-gray-200 border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none">
+          <option value="center">Center</option>
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 ">
+        <label for="fontSize" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Font Size</label>
+        <input id="fontSize" type="number" placeholder="  " class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+      </div>
+           
+      <div class="relative bottom-2 inline rounded-lg mr-6 pr-3">
+        <label for="textColor" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Color</label>
+        <input type="color" id="textColor" name="textColor" placeholder="" class="bg-red-900 ml-2 appearance-none rounded-full overflow-hidden h-10 w-10 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" />
+      </div>
+   
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 ">
+        <label for="something" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">X</label>
+        <input id="xCoor" type="number" placeholder="  " class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+      </div>
+      
+      <div class="inline-block bg-gray-200 rounded-lg p-1 mr-6 ">
+        <label for="something" class="ml-4 text-gray-500 font-medium text-sm mb-2 font-bold">Y</label>
+        <input id="yCoor" type="number" placeholder="  " class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none" />
+      </div>
+ 
+      <a id="download" class="rounded relative inline-flex group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-gradient-to-tr from-purple-600 to-purple-500 border-purple-700 text-white">
+        <span class="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
+        <span class="relative">Download</span>
+    </a>
+</div>
+</div>
+
+
 <script>
 
+document.getElementById('multipleFeature').addEventListener("click", function () {
+  document.getElementById("multipleFeature").remove();
+  document.getElementById("manualFeature").remove();
+  if (document.getElementById('menu').classList.contains('hidden')) {
+    document.getElementById('menu').classList.remove("hidden");
+    document.getElementById('drop_zone').classList.remove("hidden");
+    document.getElementById('screen').classList.remove("hidden");
+    document.getElementById('optionFeature').classList.add("hidden");
+    document.getElementById('namaDiv').classList.add("hidden");
+  }
+});
+
+window.addEventListener("load", function () {
+  // document.getElementById("menu").style.display = "none";
+});
+
+// var names = ["fafaf","fafaf","fafaf"];
 var names = [];
 
   // ------------ xlsx reader ------------------
@@ -88,6 +175,7 @@ var names = [];
       // console.log(json[0]['nama']);
 
       $('#drop_zone').remove();
+      document.getElementById('attachImage').classList.remove("hidden");
     }
     reader.readAsArrayBuffer(f);
     console.log('File(s) dropped');
@@ -108,17 +196,21 @@ var names = [];
   // console.log(names[0]);
 
   // 1.
-  const prevCanvas = document.getElementById("prevCanvas");
+
   const canvas = document.getElementById("canvas");
   const prevCtx = prevCanvas.getContext("2d");
   const ctx = canvas.getContext("2d");
   const fontFamilyInput = document.getElementById('fontFamily');
   const nameInput = document.getElementById('name');
+  const textAlignInput = document.getElementById('textAlign');
   const fontSizeInput = document.getElementById('fontSize');
   const textColorInput = document.getElementById('textColor');
   const xCoorInput = document.getElementById('xCoor');
   const yCoorInput = document.getElementById('yCoor');
   
+
+  console.log(textColorInput.value);
+
 
   var switchVar = false;
   const previewSize = 0.5;
@@ -130,6 +222,8 @@ var names = [];
   const uploadImage = (e) => {
       reader.onload = () => {
         img.onload = () => {
+          document.getElementById('attachImage').remove();
+          document.getElementById('prevCanvas').style.display = '';
           drawImage();
         };
         img.src = reader.result;
@@ -165,13 +259,13 @@ imgHeight = canvas.height;
 	ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
 	ctx.font = '800 ' + fontSizeInput.value + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
 	ctx.fillStyle = textColorInput.value;
-    ctx.textAlign = "center";
+    ctx.textAlign = textAlignInput.value;
 	ctx.fillText(name, xCoor.value, yCoor.value);
   // -----------------
 	prevCtx.drawImage(img, 0, 0, prevImgWidth, prevImgHeight);
 	prevCtx.font = '800 ' + fontSizeInput.value * previewSize + 'px ' +  fontFamilyInput.options[fontFamilyInput.selectedIndex].value;
 	prevCtx.fillStyle = textColorInput.value;
-    prevCtx.textAlign = "center";
+    prevCtx.textAlign = textAlignInput.value;
 	prevCtx.fillText(names[0]['nama'], xCoor.value * previewSize, yCoor.value * previewSize);
 }
 
@@ -183,12 +277,17 @@ fontFamilyInput.addEventListener('click', function () {
 	drawImage();
 })
 
+textAlignInput.addEventListener('click', function () {
+	drawImage();
+})
+
 fontSizeInput.addEventListener('input', function () {
 	drawImage();
 })
 
 textColorInput.addEventListener('input', function () {
-	drawImage();
+  drawImage();
+  // textColorInput.classList.add('bg-['+ textColorInput.value +']');
 })
 
 xCoorInput.addEventListener('input', function () {
@@ -224,7 +323,7 @@ function loopData() {
   }
   
   //6.
-  document.querySelector("button").addEventListener("click", download);
+  document.getElementById("download").addEventListener("click", download);
 </script>
   
 </body>
