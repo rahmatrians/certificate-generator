@@ -264,7 +264,7 @@ document.getElementById('manualFeature').addEventListener("click", function () {
     // 5.
     function download() {
       window.jsPDF = window.jspdf.jsPDF;
-      var pdf = new jsPDF({orientation: 'l', unit: 'px', compress: true, format: [imgWidth, imgHeight]});
+      var pdf = new jsPDF({orientation: 'l', unit: 'px', format: [imgWidth, imgHeight]});
 
       switchVar = true;
       console.log("switchVar : "+switchVar);
@@ -274,7 +274,7 @@ document.getElementById('manualFeature').addEventListener("click", function () {
       // link.href = image;
       // link.download = "sertifikat-" + nameInput.value +".png";
       pdf.addImage(image, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(nameInput.value+".pdf"); 
+      pdf.save("download.pdf"); 
       // link.click();
     }
 
@@ -294,6 +294,38 @@ document.getElementById('multipleFeature').addEventListener("click", function ()
     document.getElementById('namaDiv').classList.add("hidden");
     
   }
+
+          // var names = ["fafaf","fafaf","fafaf"];
+    var names = [];
+
+    // ------------ xlsx reader ------------------
+
+    function dropHandler(e) {
+      e.stopPropagation(); e.preventDefault();
+      var files = e.dataTransfer.files, f = files[0];
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var data = new Uint8Array(e.target.result);
+        var workbook = XLSX.read(data, { type: 'array' });
+
+        var first_sheet_name = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[first_sheet_name];
+        names = XLSX.utils.sheet_to_json(worksheet);
+
+        // console.log(json[0]['nama']);
+
+        $('#drop_zone').remove();
+        document.getElementById('attachImage').classList.remove("hidden");
+      }
+      reader.readAsArrayBuffer(f);
+      console.log('File(s) dropped');
+    }
+
+    function dragOverHandler(e) {
+      e.preventDefault();
+    };
+
+
 
 
 
@@ -411,17 +443,16 @@ document.getElementById('multipleFeature').addEventListener("click", function ()
     imageLoader.addEventListener("change", uploadImage);
 
     function loopData() {
-      window.jsPDF = window.jspdf.jsPDF;
-      
-      for (let v = 0; v < names.length; v++) {
-        var pdf = new jsPDF({orientation: 'l', unit: 'px', compress: true, format: [imgWidth, imgHeight]});
-        name = names[v]['nama'];
-        console.log(name);
-        drawImage();
-        const image = canvas.toDataURL('image/png');
-        pdf.addImage(image, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save("sertifikat-"+name+".pdf"); 
-      }
+    for (let v = 0; v < names.length; v++) {
+      name = names[v]['nama'];
+      console.log(name);
+      drawImage();
+      const image = canvas.toDataURL();
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = "image-" + name +".png";
+      link.click();
+    }
     }
 
     // 5.
@@ -435,38 +466,6 @@ document.getElementById('multipleFeature').addEventListener("click", function ()
     document.getElementById("download").addEventListener("click", download);
 
 });
-
-
-// var names = ["fafaf","fafaf","fafaf"];
-var names = [];
-
-// ------------ xlsx reader ------------------
-
-function dropHandler(e) {
-  e.stopPropagation(); e.preventDefault();
-  var files = e.dataTransfer.files, f = files[0];
-  var reader = new FileReader();
-  reader.onload = function (e) {
-    var data = new Uint8Array(e.target.result);
-    var workbook = XLSX.read(data, { type: 'array' });
-
-    var first_sheet_name = workbook.SheetNames[0];
-    var worksheet = workbook.Sheets[first_sheet_name];
-    names = XLSX.utils.sheet_to_json(worksheet);
-
-    // console.log(json[0]['nama']);
-
-    $('#drop_zone').remove();
-    document.getElementById('attachImage').classList.remove("hidden");
-  }
-  reader.readAsArrayBuffer(f);
-  console.log('File(s) dropped');
-}
-
-function dragOverHandler(e) {
-  e.preventDefault();
-};
-
 
 // window.addEventListener("load", function () {
   // document.getElementById("menu").style.display = "none";
